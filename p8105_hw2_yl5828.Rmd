@@ -45,8 +45,10 @@ snp_df =
   separate(date, into = c("month", "day", "year"), sep = "/") %>%
   mutate(
     month=recode(month, `1` ="January", `2`= "February", `3`= "March", `4`= "April", `5`= "May",`6`= "June",`7`= "July",`8`= "August",`9`= "September",`10`= "October",`11`= "November",`12`= "December"),
-    year = if_else(year > 25, 1900 + as.numeric(year), 2000 + as.numeric(year)))%>%
-  select(year, month, close)
+    year = if_else(year > 25, 1900 + as.numeric(year), 2000 + as.numeric(year)),
+    month = factor(month, levels = month.name, ordered = TRUE))%>%
+  select(year, month, close) %>%
+  arrange(year,month)
 
 snp_df
 ```
@@ -204,7 +206,7 @@ zori_clean <- zori %>%
 
 ```{r Merge zori_clean and zip_codes_clean}
 zori_merged <- zori_clean |>
-  left_join(zip_codes_clean, by = c("zip" = "zip_code")) %>%
+  left_join(zip_codes_clean, by = c("zip" = "zip_code"),relationship = "many-to-many") %>%
   select(date,zip,CountyName,neighborhood,zori)
 ```
 
@@ -214,40 +216,30 @@ The resulting _tidy_ dataset **`zori_merged`** contains **`r nrow(zori_merged)`*
 
 There are some ZIP codes apeear in the ZIP code dataset but not in the Zillow Rental Price dataset, such as,  **`r paste(head(setdiff(zip_codes_clean$zip_code, zori_clean$zip), 5), collapse = ", ")`**.  
 
-These ZIP codes are often excluded because they may correspond to invalid information. For example, the ZIP codes are in fact **non-residential areas** (large commercial or industrial zones) or **P.O. boxes** numbers.  
+These ZIP codes are often excluded because they may correspond to invalid information. For example, the ZIP codes are in fact **non-residential areas** (large commercial or industrial zones) or **P.O. boxes** numbers. 
 
 
 
 ### Rental Price Fluctuation
 
-```{r }
-covid_drop <- zori_merged |>
-  filter(date %in% c("2020-01-31", "2021-01-31")) |>
-  pivot_wider(names_from = date, values_from = zori) |>
-  mutate(drop = `2021-01-31` - `2020-01-31`) |>
-  arrange(drop) |>
-  slice_head(n = 10) |>
-  select(zip, county, neighborhood, `2020-01-31`, `2021-01-31`, drop)
+```{r Generate top 10 drop during COVID}
+covid <- zori_merged %>%
+  filter(date %in% c("2020-01-31", "2021-01-31")) %>%
+  pivot_wider(
+    names_from = date,
+    values_from = zori,
+    values_fn = mean) %>%
+  mutate(drop = `2021-01-31` - `2020-01-31`) %>%
+  arrange(drop) %>%
+  slice_head(n = 10) %>%
+  select(zip, CountyName, neighborhood, `2020-01-31`, `2021-01-31`, drop)
+
+covid
 ```
 
+### Comments on Rental Price Fluctuation
 
-Rental prices fluctuated dramatically during the COVID-19 pandemic.  
-Comparing January 2021 to January 2020 across all ZIP codes, the table below shows the ten ZIP codes with the largest decline in rent prices:  
+From the table, we could observe that rental prices fluctuated dramatically during the COVID-19 pandemic.  
+Comparing January 2021 to January 2020 across all ZIP codes, the largest decline was in ZIP 10007 Lower Manhattan from $6334 to $5422 resulting a drop of $913. Second large drop happened in ZIP 10069 with about $748, following with a $714 drop in ZIP 10009 Lower East Side. 
 
-```{r echo=FALSE}
-covid_drop |> knitr::kable(digits = 1, caption = "Top 10 NYC ZIP codes with largest rental price drop from Jan 2020 to Jan 2021")
-```
-
-### Comments on the TOP 10 rental prices drop ZIP code
-The largest decline was in ZIP 10007 (Lower Manhattan), with a drop of about $913, from $6334 to $5422. 
-Other steep declines (–$700 to –$750) occurred in 10069 (Upper West Side / Riverside area), 10009 (Lower East Side), and 10016 (Gramercy / Murray Hill).
-The smallest of the “top 10” was 10010 (Gramercy / Murray Hill) with a drop of about $684.
-All 10 ZIP codes are in Manhattan, indicating that this borough was most heavily affected.
-Neighborhoods like Lower Manhattan, Lower East Side, Gramercy, Chelsea, Greenwich Village, and SoHo dominate the list.
-These areas are usually dense, expensive rental markets with heavy reliance on office workers, students, and international residents.
-
-During the COVID-19 pandemic (2020–2021), remote work and out-migration reduced demand for Manhattan rentals, leading to dramatic price declines.
-Outer-borough neighborhoods (e.g., Queens, Bronx, Staten Island) are absent from the top 10, suggesting less dramatic fluctuations there.
-
-ZIP 10069 has missing neighborhood info, but is known to cover part of the Upper West Side / Riverside South, an upscale area also impacted by decreased demand.
-
+Other borough neighborhoods, such as Queens, Bronx, Staten Island, are not in the top 10, suggesting less fluctuations in these areas.
