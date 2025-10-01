@@ -1,0 +1,10 @@
+---
+title: "p8105_hw2_yl5828"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup}
+library(tidyverse)
+```
