@@ -14,7 +14,7 @@ library(dplyr)
 
 ## Problem 1
 
-### Clean pols-month.csv
+### Clean file pols-month
 
 ```{r read and clean pols_month}
 pols_month_df =
@@ -30,6 +30,7 @@ pols_month_df =
 pols_month_df
 ```
 
+### Clean file snp
 
 ```{r read and clean snp}
 snp_df =
@@ -43,3 +44,21 @@ snp_df =
 
 snp_df
 ```
+
+### Clean file unemployment
+
+```{r read and clean unemployment}
+unemployment_df = 
+  read_csv("./fivethirtyeight_datasets/unemployment.csv", na = c("NA", ".", "")) %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    jan:dec,
+    names_to = "month", 
+    values_to = "unemployment") |>
+  mutate(
+    month=recode(month, `jan` ="January", `feb`= "February", `mar`= "March", `apr`= "April", `may`= "May",`jun`= "June",`jul`= "July",`aug`= "August",`sep`= "September",`oct`= "October",`nov`= "November",`dec`= "December" ))
+
+unemployment_df
+```
+
+
