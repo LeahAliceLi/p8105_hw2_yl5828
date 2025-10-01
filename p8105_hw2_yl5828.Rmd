@@ -1,5 +1,7 @@
 ---
 title: "p8105_hw2_yl5828"
+author: "Leah Li yl5828"
+date: "2025-10-01"
 output: github_document
 editor_options: 
   chunk_output_type: console
@@ -72,10 +74,12 @@ q1join_df =
 q1join_df
 ```
 
+### Dataset Explanation
 
+The dataset `pols_month_df` include variables as follows: `r paste(names(pols_month_df), collapse = ", ")`. And the dataset has **`r nrow(pols_month_df) `** rows and **`r ncol (pols_month_df)`** columns. 
 
+The dataset `snp_df` include variables as follows: `r paste(names(snp_df), collapse = ", ")`. And the dataset has **`r nrow(snp_df) `** rows and **`r ncol (snp_df)`** columns. 
 
+The dataset `unemployment_df` include variables as follows: `r paste(names(unemployment_df), collapse = ", ")`. And the dataset has **`r nrow(unemployment_df) `** rows and **`r ncol (unemployment_df)`** columns. 
 
-
-
-
+The resulting dataset `q1join_df` include variables as follows: `r paste(names(q1join_df), collapse = ", ")`. And the dataset has **`r nrow(q1join_df) `** rows and **`r ncol (q1join_df)`** columns. The range of years is (`r range(q1join_df$year)`).
