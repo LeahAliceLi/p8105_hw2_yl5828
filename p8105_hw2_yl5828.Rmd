@@ -5,16 +5,19 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup}
+```{r message = FALSE}
 # Load dataset
 library(tidyverse)
 library(dplyr)
 ```
 
 
+## Problem 1
+
+### Clean pols-month.csv
 
 ```{r read and clean pols_month}
-pols_month_df=
+pols_month_df =
   read_csv("./fivethirtyeight_datasets/pols-month.csv", na = c("NA", ".", "")) %>%
   janitor::clean_names() %>%
   separate(mon, into = c("year", "month", "day"), sep = "-") %>%
@@ -23,6 +26,20 @@ pols_month_df=
     president = if_else(prez_gop == 1, "gop", "dem")
          )%>%
   select(-prez_dem, -prez_gop, -day)
+
+pols_month_df
 ```
 
 
+```{r read and clean snp}
+snp_df =
+  read_csv("./fivethirtyeight_datasets/snp.csv", na = c("NA", ".", "")) %>%
+  janitor::clean_names() %>%
+  separate(date, into = c("month", "day", "year"), sep = "/") %>%
+  mutate(
+    month=recode(month, `1` ="January", `2`= "February", `3`= "March", `4`= "April", `5`= "May",`6`= "June",`7`= "July",`8`= "August",`9`= "September",`10`= "October",`11`= "November",`12`= "December"),
+    year = if_else(year > 25, 1900 + as.numeric(year), 2000 + as.numeric(year)))%>%
+  select(year, month, close)
+
+snp_df
+```
