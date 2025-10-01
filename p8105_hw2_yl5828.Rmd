@@ -7,6 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
+
 ```{r message = FALSE}
 # Load dataset
 library(tidyverse)
@@ -82,4 +83,51 @@ The dataset `snp_df` include variables as follows: `r paste(names(snp_df), colla
 
 The dataset `unemployment_df` include variables as follows: `r paste(names(unemployment_df), collapse = ", ")`. And the dataset has **`r nrow(unemployment_df) `** rows and **`r ncol (unemployment_df)`** columns. 
 
-The resulting dataset `q1join_df` include variables as follows: `r paste(names(q1join_df), collapse = ", ")`. And the dataset has **`r nrow(q1join_df) `** rows and **`r ncol (q1join_df)`** columns. The range of years is (`r range(q1join_df$year)`).
+The resulting dataset `q1join_df` include variables as follows: `r paste(names(q1join_df), collapse = ", ")`. And the dataset has **`r nrow(q1join_df) `** rows and **`r ncol (q1join_df)`** columns. The range of years is (**`r range(q1join_df$year)`**).
+
+
+
+## Problem 2
+
+### Clean dataset Mr.Trash Wheel
+
+```{r read and clean Mr.Trash Wheel}
+mr.trash_df = 
+  readxl::read_excel("./Mr.Trash Wheel/202509 Trash Wheel Collection Data.xlsx", sheet="Mr. Trash Wheel", range="A2:M709", na = c("NA", ".", ""))%>%
+  janitor::clean_names() %>%
+  filter(!is.na(dumpster)) %>%
+  mutate(
+    sports_balls = as.integer(round(sports_balls))
+  )
+
+mr.trash_df
+```
+
+### Clean dataset Professor Trash Wheel
+
+```{r read and clean Professor Wheel}
+professor_trash_df = 
+  readxl::read_excel("./Mr.Trash Wheel/202509 Trash Wheel Collection Data.xlsx", sheet="Professor Trash Wheel", range="A2:M134", na = c("NA", ".", ""))%>%
+  janitor::clean_names() %>%
+  filter(!is.na(dumpster))
+
+professor_trash_df
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
