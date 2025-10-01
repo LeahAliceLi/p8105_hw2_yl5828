@@ -99,7 +99,7 @@ The resulting dataset `q1join_df` include variables as follows: `r paste(names(q
 mr.trash_df = 
   readxl::read_excel("./Mr.Trash Wheel/202509 Trash Wheel Collection Data.xlsx", sheet="Mr. Trash Wheel", range="A2:M709", na = c("NA", ".", ""))%>%
   janitor::clean_names() %>%
-  drop_na() %>%
+  drop_na(dumpster) %>%
   mutate(
     sports_balls = as.integer(round(sports_balls)),
     year = as.numeric(year),
@@ -115,7 +115,7 @@ mr.trash_df
 professor_trash_df = 
   readxl::read_excel("./Mr.Trash Wheel/202509 Trash Wheel Collection Data.xlsx", sheet="Professor Trash Wheel", range="A2:M134", na = c("NA", ".", ""))%>%
   janitor::clean_names() %>%
-  drop_na()%>%
+  drop_na(dumpster)%>%
   mutate(wheel_name = "Professor")
 
 professor_trash_df
@@ -127,7 +127,7 @@ professor_trash_df
 gwynnda_trash_df = 
   readxl::read_excel("./Mr.Trash Wheel/202509 Trash Wheel Collection Data.xlsx", sheet="Gwynns Falls Trash Wheel", range="A2:L351", na = c("NA", ".", ""))%>%
   janitor::clean_names() %>%
-  drop_na()%>%
+  drop_na(dumpster)%>%
   mutate(wheel_name = "Gwynnda")
 
 gwynnda_trash_df
@@ -163,7 +163,7 @@ gwynnda_butts <- all_wheels_combined %>%
 print(gwynnda_butts)
 ```
 
-The total number of cigarette butts collected by Gwynnda in June of 2022 was **`r format(gwynnda_butts, big.mark = ",")`**. However, we could notice that this 0 is from the new merged datasheet. If we are using the original Gwynnda dataset, the number of cigarette butts will not be 0, the actual number would be 18120. 
+The total number of cigarette butts collected by Gwynnda in June of 2022 was **`r format(gwynnda_butts, big.mark = ",")`**. 
 
 The dataset contains **`r nrow(all_wheels_combined)`** observations of trash collection events for `r n_distinct(all_wheels_combined$wheel_name)` different trash wheels, spanning from `r min(all_wheels_combined$year)` to `r max(all_wheels_combined$year)`. Each observation records the contents of a single dumpster, identified by the name of the trash wheel (e.g., 'Mr. Trash Wheel', 'Gwynnda'). The dataset `mr.trash_df` include **`r nrow(mr.trash_df) `** dumpsters. The dataset `professor_trash_df` include **`r nrow(professor_trash_df) `** dumpsters. The dataset `gwynnda_trash_df` include **`r nrow(gwynnda_trash_df) `** dumpsters. The combined dataset has the following variables: **`r paste(names(all_wheels_combined), collapse = ", ")`**. Key variables include the total weight_tons for each haul, as well as counts of specific items like plastic_bottles, polystyrene, and cigarette_butts.
 
